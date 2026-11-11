@@ -2,6 +2,6 @@
   <ChatBox />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ChatBox from './components/ChatBox.vue'
 </script>

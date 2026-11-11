@@ -16,14 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:5173", "http://localhost:5173"})
 public class ChatController {
 
     private final DeepSeekService deepSeekService;
 
     @PostMapping
     public ResponseEntity<ChatResponse> chat(@Valid @RequestBody ChatRequest request) {
-        String aiResponse = deepSeekService.chatWithAI(request.getMessage());
+        String aiResponse = deepSeekService.chatWithAI(request.getMessage(), request.getHistory());
 
         ChatResponse response = new ChatResponse();
         response.setMessage(aiResponse);
