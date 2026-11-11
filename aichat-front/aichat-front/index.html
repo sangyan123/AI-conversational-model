@@ -4,34 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI 对话助手</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-      // 图片懒加载polyfill
-      if ('IntersectionObserver' in window) {
-        const imgObserver = new IntersectionObserver((entries, observer) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const img = entry.target;
-              img.src = img.dataset.src;
-              imgObserver.unobserve(img);
-            }
-          });
-        });
-        
-        document.addEventListener('DOMContentLoaded', () => {
-          document.querySelectorAll('img[data-src]').forEach(img => {
-            imgObserver.observe(img);
-          });
-        });
-      } else {
-        // 降级方案
-        document.addEventListener('DOMContentLoaded', () => {
-          document.querySelectorAll('img[data-src]').forEach(img => {
-            img.src = img.dataset.src;
-          });
-        });
-      }
-    </script>
   </head>
   <body>
     <div id="app"></div>

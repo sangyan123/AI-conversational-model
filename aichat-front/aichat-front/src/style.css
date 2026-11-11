@@ -385,6 +385,7 @@ textarea {
   -webkit-border-radius: 18px;
   -moz-border-radius: 18px;
   resize: none;
+  overflow-y: auto;
   font-family: var(--sans);
   font-size: 1rem;
   line-height: 1.4;

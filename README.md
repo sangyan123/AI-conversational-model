@@ -37,6 +37,7 @@
 - 实时 AI 对话
 - 多轮上下文记忆（前端携带最近 20 轮历史）
 - 请求超时保护（前端 65s / 后端读取 60s），失败返回明确错误码
+- 可选令牌鉴权 + 按 IP 限流
 - 响应式设计，支持移动端、平板和桌面端
 - 消息历史记录
 - 加载状态动画
@@ -129,22 +130,52 @@
 | 状态码 | 含义 |
 |-------|------|
 | 400 | 请求参数校验失败（消息为空、历史超 50 条等） |
-| 429 | 上游 AI 服务限流 |
+| 401 | 已启用令牌鉴权但未携带或携带了错误令牌 |
+| 429 | 触发本地限流，或上游 AI 服务限流 |
 | 502 | 上游鉴权失败或返回异常 |
 | 503 | 未配置 `DEEPSEEK_API_KEY` |
 | 504 | 调用上游超时或网络不可达 |
 
 ## 环境变量
 
+### 后端
+
 | 变量名 | 描述 | 示例值 |
 |-------|------|-------|
-| DEEPSEEK_API_KEY | DeepSeek API 密钥 | sk-xxxxxxxxxxxxxxxxxxxxxxxx |
+| DEEPSEEK_API_KEY | DeepSeek API 密钥（必填） | sk-xxxxxxxxxxxxxxxxxxxxxxxx |
+| AICHAT_AUTH_TOKEN | 可选。设置后启用令牌鉴权，请求需带 `Authorization: Bearer <token>` | my-secret-token |
+
+### 前端
+
+| 变量名 | 描述 |
+|-------|------|
+| VITE_AICHAT_AUTH_TOKEN | 可选。后端启用 `AICHAT_AUTH_TOKEN` 时，这里填同样的值 |
+
+写在 `aichat-front/aichat-front/.env.local` 中即可（该文件已被 git 忽略）。
+
+## 鉴权与限流
+
+- **令牌鉴权**：默认关闭，保持本地开发开箱即用。设置 `AICHAT_AUTH_TOKEN` 后启用，
+  健康检查接口始终放行。这解决的是"谁能调用我的后端"，不是多用户体系。
+- **限流**：默认开启，按 IP 每 60 秒 20 次，保护 DeepSeek 额度。
+  可在 `application.yml` 的 `ratelimit` 下调整或关闭。
+
+> 注意：当前限流是「每实例」计数。多实例部署若需要全局配额，应改用 Redis 计数器。
+
+## 测试
+
+```bash
+cd aichat-back
+mvn test
+```
+
+覆盖：多轮历史组装顺序、角色白名单过滤、上游异常映射（401/429/5xx/空结果）、
+参数校验、限流与鉴权的过滤器行为。
 
 ## 前端优化
 
-- 图片懒加载
+- 内联 SVG 图标，不依赖外部 CDN，离线可用
 - CSS 变量提升可维护性
-- JavaScript 代码优化
 - 响应式布局
 - 平滑动画效果
 - 跨浏览器兼容性

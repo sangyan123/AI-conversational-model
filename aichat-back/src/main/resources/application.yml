@@ -16,3 +16,14 @@ deepseek:
     temperature: 0.7
     max-tokens: 2000
     system-prompt: "You are a helpful assistant."
+
+# 可选：共享令牌鉴权。留空则不启用（本地开发开箱即用）。
+# 配置后请求需带 Authorization: Bearer <token>
+auth:
+  token: ${AICHAT_AUTH_TOKEN:}
+
+# 按 IP 限流，保护 DeepSeek 额度
+ratelimit:
+  enabled: true
+  requests-per-window: 20
+  window-ms: 60000

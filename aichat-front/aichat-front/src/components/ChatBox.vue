@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, onUnmounted } from 'vue'
+import IconName from './IconName.vue'
 
 // 配置
 const API_BASE_URL = 'http://localhost:8080/api/chat'
@@ -8,6 +9,21 @@ const CONNECTION_CHECK_INTERVAL = 30000 // 30秒
 const CONNECT_TIMEOUT = 5000            // 健康检查超时
 const REQUEST_TIMEOUT = 65000           // 聊天请求超时（后端读取超时 60s，略大一点）
 const MAX_HISTORY_TURNS = 20            // 最多带 20 轮历史上下文
+
+/**
+ * 可选访问令牌。后端未配置 auth.token 时留空即可。
+ * 需要时在 .env.local 里设置 VITE_AICHAT_AUTH_TOKEN。
+ */
+const AUTH_TOKEN: string = import.meta.env.VITE_AICHAT_AUTH_TOKEN ?? ''
+
+/** 构造请求头，令牌存在时自动携带。 */
+function buildHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (AUTH_TOKEN) {
+    headers.Authorization = `Bearer ${AUTH_TOKEN}`
+  }
+  return headers
+}
 
 /**
  * 带真实超时的 fetch。
@@ -83,9 +99,7 @@ async function checkConnection(): Promise<boolean> {
       `${API_BASE_URL}/health`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: buildHeaders()
       },
       CONNECT_TIMEOUT
     )
@@ -262,7 +276,7 @@ async function sendMessage() {  const message = userInput.value.trim()
       API_BASE_URL,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: buildHeaders(),
         body: JSON.stringify({ message, history })
       },
       REQUEST_TIMEOUT
@@ -357,7 +371,7 @@ onUnmounted(() => {
 <template>
   <div class="container">
     <header class="header">
-      <h1><i class="fas fa-robot"></i> AI 对话助手</h1>
+      <h1><IconName name="robot" /> AI 对话助手</h1>
       <div class="status" :class="{ connected: isConnected }">
         <span class="status-indicator"></span>
         <span class="status-text">{{ statusText }}</span>
@@ -373,7 +387,7 @@ onUnmounted(() => {
           :class="msg.isUser ? 'user-message' : 'ai-message'"
         >
           <div class="avatar">
-            <i :class="msg.isUser ? 'fas fa-user' : 'fas fa-robot'"></i>
+            <IconName :name="msg.isUser ? 'user' : 'robot'" />
           </div>
           <div class="content">
             <div class="text" :class="{ 'error-text': msg.isError }">{{ msg.content }}</div>
@@ -384,7 +398,7 @@ onUnmounted(() => {
         <!-- 加载动画 -->
         <div v-if="isLoading" class="message ai-message">
           <div class="avatar">
-            <i class="fas fa-robot"></i>
+            <IconName name="robot" />
           </div>
           <div class="content">
             <div class="loading">
@@ -414,7 +428,7 @@ onUnmounted(() => {
             class="send-button"
             :class="{ 'sending': isLoading }"
           >
-            <i class="fas fa-paper-plane"></i>
+            <IconName name="send" />
           </button>
         </div>
         <div class="hint">

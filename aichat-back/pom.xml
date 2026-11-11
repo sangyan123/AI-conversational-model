@@ -76,6 +76,19 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!--
+                固定测试 JVM 的编码为 UTF-8。
+                中文 Windows 上 JVM 默认 file.encoding=GBK，会导致测试里
+                含中文的断言比对失败（源码是 UTF-8）。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
