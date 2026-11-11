@@ -386,6 +386,15 @@ onUnmounted(() => {
 
     <div class="chat-container">
       <div class="messages" ref="messagesContainer">
+        <!-- 空状态：还没有任何对话时给用户引导，避免大片留白 -->
+        <div v-if="messages.length === 0 && !isLoading" class="empty-state">
+          <div class="icon-badge">
+            <IconName name="robot" />
+          </div>
+          <h2>有什么可以帮你的？</h2>
+          <p>输入问题开始对话。你的消息与 AI 回复都会保存在本地，刷新后仍可查看。</p>
+        </div>
+
         <div
           v-for="(msg, index) in messages"
           :key="index"
@@ -407,10 +416,13 @@ onUnmounted(() => {
             <IconName name="robot" />
           </div>
           <div class="content">
-            <div class="loading">
-              <span></span>
-              <span></span>
-              <span></span>
+            <div class="loading" aria-label="AI 正在思考">
+              <div class="spinner">
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+              </div>
             </div>
           </div>
         </div>
@@ -433,12 +445,14 @@ onUnmounted(() => {
             :disabled="!isConnected || isLoading"
             class="send-button"
             :class="{ 'sending': isLoading }"
+            aria-label="发送消息"
           >
             <IconName name="send" />
           </button>
         </div>
         <div class="hint">
-          按 Enter 发送，Shift + Enter 换行
+          <span><kbd>Enter</kbd> 发送</span>
+          <span><kbd>Shift</kbd> + <kbd>Enter</kbd> 换行</span>
         </div>
       </div>
     </div>
