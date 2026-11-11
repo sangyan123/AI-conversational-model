@@ -150,8 +150,31 @@
 | 变量名 | 描述 |
 |-------|------|
 | VITE_AICHAT_AUTH_TOKEN | 可选。后端启用 `AICHAT_AUTH_TOKEN` 时，这里填同样的值 |
+| VITE_API_BASE_URL | 可选。后端地址，如 `https://api.example.com`。留空则用相对路径 `/api/chat` |
+| VITE_DEV_API_TARGET | 仅开发期。Vite 代理目标，默认 `http://localhost:8080` |
 
 写在 `aichat-front/aichat-front/.env.local` 中即可（该文件已被 git 忽略）。
+
+## 前后端连接方式
+
+前端默认用**相对路径** `/api/chat`，不写死后端地址：
+
+- **开发环境**：Vite 把 `/api` 代理到 `VITE_DEV_API_TARGET`（默认 `http://localhost:8080`）。
+  浏览器看到的是同源请求，因此开发时**不需要 CORS**。
+- **生产环境**：需要反向代理把 `/api` 转发到后端（如 Nginx），
+  或显式设置 `VITE_API_BASE_URL` 指向后端地址。
+
+Nginx 反向代理示例：
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+```
+
+若前后端分别部署在不同域名下，后端仍保留 CORS 白名单配置（`cors.allowed-origin-patterns`）。
 
 ## 鉴权与限流
 

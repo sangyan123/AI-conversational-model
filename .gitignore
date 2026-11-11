@@ -1,0 +1,32 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# 构建产物（子项目各自也有 .gitignore，这里兜底）
+target/
+build/
+dist/
+node_modules/
+
+# 前端环境变量（可能含令牌，不要提交）
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.bak
+*.orig
+*.rej

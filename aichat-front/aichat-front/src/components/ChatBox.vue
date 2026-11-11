@@ -3,7 +3,13 @@ import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 import IconName from './IconName.vue'
 
 // 配置
-const API_BASE_URL = 'http://localhost:8080/api/chat'
+/**
+ * 后端地址。留空则使用相对路径 `/api/chat`：
+ * - 开发环境走 Vite 代理（见 vite.config.ts），同源请求，不需要 CORS
+ * - 生产环境需由反向代理把 /api 转发到后端，或显式设置 VITE_API_BASE_URL
+ */
+const API_ORIGIN: string = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+const API_BASE_URL = `${API_ORIGIN}/api/chat`
 const MESSAGES_KEY = 'ai_chat_messages'
 const CONNECTION_CHECK_INTERVAL = 30000 // 30秒
 const CONNECT_TIMEOUT = 5000            // 健康检查超时
